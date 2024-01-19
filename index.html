@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OCR</title>
+</head>
+<body>
+  <div>
+    <!-- селект для выбора языка -->
+    <select id="langs">
+      <option value="rus" selected>Русский</option>
+      <option value="eng">English</option>
+    </select>
+
+    <!-- инпут для загрузки файла изображения -->
+    <input type="file" id="file" multiple="multiple" />
+
+    <!-- лог процесса обработки -->
+    <div id="log"></div>
+
+    <!-- лог вывода результата -->
+    <div id="result"></div>
+
+    <!-- кнопка Начать обработку -->
+    <button type="button" id="start">Начать обработку</button>
+  </div>
+  <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+  <script src="index.js"></script>
+</body>
+</html>
