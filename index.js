@@ -1,43 +1,54 @@
 const createWorker = Tesseract.createWorker;
 
-// Распознавание изображения
-function recognize(file, lang, logger) {
-  return Tesseract.recognize(file, lang, {logger})
-   .then(({ data: {text}}) => {
-     return text;
-   })
-}
-
 const log = document.getElementById('log');
 const result = document.getElementById('result');
+const statusText = document.getElementById('status');
+const progress = document.getElementById('progress');
+const startBtn = document.getElementById('start');
+const clearBtn = document.getElementById('delete');
+const itemTemp = document.getElementById('result-item').content;
 
-// Отслеживание прогресса обработки
 function updateProgress(data) {
-  log.innerHTML = '';
-  const statusText = document.createTextNode(data.status);
-  const progress = document.createElement('progress');
-  progress.max = 1;
+  statusText.textContent = data.status;
   progress.value = data.progress;
-  log.appendChild(statusText);
-  log.appendChild(progress);
 }
 
-// Вывод результата
+function deleteFields() {
+  const items = result.querySelectorAll('.result-item');
+  if(items.length === 0) return;
+  items.forEach(item => item.remove());
+}
+
 function setResult(text) {
   text = text.replace(/\n\s*\n/g, '\n');
-  const p = document.createElement('p');
-  p.textContent = text;
-  result.appendChild(p);
+  const newText = itemTemp.querySelector('.result-item').cloneNode(true);
+  newText.textContent = text;
+  result.append(newText);
 }
 
-document.getElementById('start').addEventListener('click', () => {
-  const files = document.getElementById('file').files;
-  if (!files) return;
-
-  const lang = document.getElementById('langs').value;
-
-  for (const file of files) {
-    recognize(file, lang, updateProgress)
-      .then(setResult);
+async function recognize(file, lang, logger) {
+  try {
+    const {data} = await Tesseract.recognize(file, lang, {logger});
+    return data.text;
+  } catch(err) {
+    console.log(err);
   }
-});
+}
+
+async function imgProccesing() {
+  try {
+    const files = document.getElementById('file').files;
+    if (!files) return;
+    const lang = document.getElementById('langs').value;
+
+    for (const file of files) {
+      const text = await recognize(file, lang, updateProgress)
+      setResult(text);
+    }
+  } catch(err) {
+    console.log(err);
+  }
+}
+
+startBtn.addEventListener('click', imgProccesing);
+clearBtn.addEventListener('click', deleteFields);
